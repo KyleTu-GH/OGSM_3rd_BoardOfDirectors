@@ -72,7 +72,7 @@
         </div>
       </div>
 
-      <!-- 第 1 列：門檻指標 (改由試算表動態取得) -->
+      <!-- 第 1 列：門檻指標 (基準表動態取得) -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
           <div class="text-xs font-medium text-slate-500 mb-1">總會員數</div>
@@ -93,14 +93,9 @@
         </div>
       </div>
 
-      <!-- 第 2 列：出席與尚缺人數 -->
+      <!-- 第 2 列：出席與尚缺人數 (已調整順序：已回覆 -> 小計與合計 -> 尚缺人數) -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-rose-50/50 rounded-xl p-4 border border-rose-200" id="card-shortage">
-          <div class="text-xs font-semibold text-rose-700 mb-1">尚缺人數 (含委託書)</div>
-          <div class="text-3xl font-extrabold text-rose-600 tracking-tight" id="stat-shortage">-- <span class="text-sm font-normal text-rose-500">人</span></div>
-          <div class="text-[11px] text-rose-600/80 mt-2">= 安全成會人數 - 已回覆人數</div>
-        </div>
-
+        <!-- 1. 已回覆人數 (含委託書) -->
         <div class="bg-blue-50/50 rounded-xl p-4 border border-blue-200 cursor-pointer hover:bg-blue-100/50 transition group" onclick="openRepliedModal()" title="點擊檢視已回覆名冊">
           <div class="flex justify-between items-start">
             <div class="text-xs font-semibold text-blue-700 mb-1">已回覆人數 (含委託書)</div>
@@ -113,6 +108,7 @@
           </div>
         </div>
 
+        <!-- 2. 出席小計與合計 -->
         <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col justify-between">
           <div class="text-xs font-medium text-slate-500 mb-1">出席小計與合計</div>
           <div class="space-y-1.5 text-xs">
@@ -128,6 +124,13 @@
               <span>合計：<span id="stat-subtotal">--</span> 人</span>
             </div>
           </div>
+        </div>
+
+        <!-- 3. 尚缺人數 (含委託書) -->
+        <div class="bg-rose-50/50 rounded-xl p-4 border border-rose-200" id="card-shortage">
+          <div class="text-xs font-semibold text-rose-700 mb-1">尚缺人數 (含委託書)</div>
+          <div class="text-3xl font-extrabold text-rose-600 tracking-tight" id="stat-shortage">-- <span class="text-sm font-normal text-rose-500">人</span></div>
+          <div class="text-[11px] text-rose-600/80 mt-2">= 安全成會人數 - 已回覆人數</div>
         </div>
       </div>
 
@@ -312,7 +315,7 @@
     
     let rawAttendanceList = [];
     let rawCandidatesList = [];
-    let currentThresholds = { totalMembers: 86, quorum: 44, safeQuorum: 48 };
+    let currentThresholds = { totalMembers: 84, quorum: 42, safeQuorum: 46 };
 
     function cleanAndEscapeText(text) {
       if (!text) return "";
@@ -359,9 +362,9 @@
       if (!att) return;
       rawAttendanceList = att.list || [];
 
-      const totalMembers = thresholds.totalMembers || 86;
-      const quorum = thresholds.quorum || 44;
-      const safeThreshold = thresholds.safeQuorum || 48;
+      const totalMembers = thresholds.totalMembers || 84;
+      const quorum = thresholds.quorum || 42;
+      const safeThreshold = thresholds.safeQuorum || 46;
 
       const replied = att.totalReplied || 0;
       const inPerson = att.inPerson || 0;
@@ -373,12 +376,12 @@
       document.getElementById('stat-quorum').innerHTML = `${quorum} <span class="text-sm font-normal text-slate-500">人</span>`;
       document.getElementById('stat-safe-quorum').innerHTML = `${safeThreshold} <span class="text-sm font-normal text-amber-700">人</span>`;
 
-      // 第 2 列數值
-      document.getElementById('stat-shortage').innerHTML = `${shortage} <span class="text-sm font-normal text-rose-500">人</span>`;
+      // 第 2 列數值 (已依要求更新左右順序)
       document.getElementById('stat-replied').innerHTML = `${replied} <span class="text-sm font-normal text-blue-500">人</span>`;
       document.getElementById('stat-inperson').innerText = `${inPerson} 人`;
       document.getElementById('stat-proxy').innerText = `${proxy} 人`;
       document.getElementById('stat-subtotal').innerText = inPerson + proxy;
+      document.getElementById('stat-shortage').innerHTML = `${shortage} <span class="text-sm font-normal text-rose-500">人</span>`;
 
       // 監測條動態位置與標籤
       document.getElementById('bar-total-members-label').innerText = totalMembers;
