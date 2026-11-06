@@ -59,31 +59,37 @@
         <div>
           <span class="inline-block px-2.5 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 mb-1">出席統計</span>
           <h2 class="text-lg font-bold text-slate-800">OGSM 第三屆第一次會員大會 (回覆)</h2>
-          <p class="text-xs text-slate-500">即時串接會員大會回覆表單，依「中文姓名」與「是否如期參加」欄位動態結算</p>
+          <p class="text-xs text-slate-500">門檻數據取自基準表；出席依回覆表「中文姓名」與「是否如期參加」欄位動態結算</p>
         </div>
-        <a href="https://docs.google.com/spreadsheets/d/1dnBYlnKnoMr4e_cDFEGMwWz_cmlsqYCoV5om2Wi1Gm8/edit?gid=1078847818#gid=1078847818" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 font-medium hover:underline">
-          開啟會員大會回覆原始檔案 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-        </a>
+        <div class="flex items-center gap-3 text-xs">
+          <a href="https://docs.google.com/spreadsheets/d/111Wn34ig9r49K2yTweTPqY7iy7k8SWNd6VPatAlmbr0/edit?gid=286885096#gid=286885096" target="_blank" class="text-slate-600 hover:text-slate-900 font-medium hover:underline">
+            門檻基準表 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
+          <span class="text-slate-300">|</span>
+          <a href="https://docs.google.com/spreadsheets/d/1dnBYlnKnoMr4e_cDFEGMwWz_cmlsqYCoV5om2Wi1Gm8/edit?gid=1078847818#gid=1078847818" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium hover:underline">
+            大會回覆表 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
+        </div>
       </div>
 
-      <!-- 第 1 列：法定門檻 (3 組數字) -->
+      <!-- 第 1 列：門檻指標 (改由試算表動態取得) -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
           <div class="text-xs font-medium text-slate-500 mb-1">總會員數</div>
-          <div class="text-3xl font-extrabold text-slate-800 tracking-tight">86 <span class="text-sm font-normal text-slate-500">人</span></div>
-          <div class="text-[11px] text-slate-400 mt-2">固定結算基準會員數</div>
+          <div class="text-3xl font-extrabold text-slate-800 tracking-tight" id="stat-total-members">-- <span class="text-sm font-normal text-slate-500">人</span></div>
+          <div class="text-[11px] text-slate-400 mt-2">基準表動態對應：總會員數</div>
         </div>
 
         <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
           <div class="text-xs font-medium text-slate-500 mb-1">成會人數</div>
-          <div class="text-3xl font-extrabold text-slate-700 tracking-tight">44 <span class="text-sm font-normal text-slate-500">人</span></div>
-          <div class="text-[11px] text-slate-400 mt-2">= 總會員數/2 + 1</div>
+          <div class="text-3xl font-extrabold text-slate-700 tracking-tight" id="stat-quorum">-- <span class="text-sm font-normal text-slate-500">人</span></div>
+          <div class="text-[11px] text-slate-400 mt-2">基準表動態對應：成會人數</div>
         </div>
 
         <div class="bg-amber-50/60 rounded-xl p-4 border border-amber-200/80">
           <div class="text-xs font-semibold text-amber-700 mb-1">安全成會人數</div>
-          <div class="text-3xl font-extrabold text-amber-600 tracking-tight">48 <span class="text-sm font-normal text-amber-700">人</span></div>
-          <div class="text-[11px] text-amber-700/80 mt-2">= 總會員數/2 + 5% (47.3人)</div>
+          <div class="text-3xl font-extrabold text-amber-600 tracking-tight" id="stat-safe-quorum">-- <span class="text-sm font-normal text-amber-700">人</span></div>
+          <div class="text-[11px] text-amber-700/80 mt-2">基準表動態對應：安全成會人數</div>
         </div>
       </div>
 
@@ -125,21 +131,21 @@
         </div>
       </div>
 
-      <!-- 成會進度監測條 (含法定 44 人與安全 48 人雙門檻標記) -->
+      <!-- 成會進度監測條 -->
       <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
         <div class="flex justify-between items-center text-xs font-bold text-slate-700">
-          <span>成會進度監測 (總會員數 86 人)</span>
+          <span>成會進度監測 (總會員數 <span id="bar-total-members-label">--</span> 人)</span>
           <span id="progress-percent" class="font-mono text-blue-600">0.0%</span>
         </div>
         
         <div class="relative pt-6 pb-2">
-          <!-- 門檻標籤 -->
-          <div class="absolute top-0 left-[51.16%] -translate-x-1/2 flex flex-col items-center">
-            <span class="text-[10px] bg-slate-800 text-white px-1.5 py-0.5 rounded font-mono shadow-sm">成會門檻: 44人</span>
+          <!-- 門檻標籤與標線 -->
+          <div id="mark-quorum" class="absolute top-0 -translate-x-1/2 flex flex-col items-center" style="left: 50%;">
+            <span id="label-quorum-mark" class="text-[10px] bg-slate-800 text-white px-1.5 py-0.5 rounded font-mono shadow-sm">成會: --人</span>
             <div class="w-px h-3 bg-slate-800"></div>
           </div>
-          <div class="absolute top-0 left-[55.81%] -translate-x-1/2 flex flex-col items-center">
-            <span class="text-[10px] bg-amber-600 text-white px-1.5 py-0.5 rounded font-mono shadow-sm">安全成會: 48人</span>
+          <div id="mark-safe-quorum" class="absolute top-0 -translate-x-1/2 flex flex-col items-center" style="left: 55%;">
+            <span id="label-safe-mark" class="text-[10px] bg-amber-600 text-white px-1.5 py-0.5 rounded font-mono shadow-sm">安全: --人</span>
             <div class="w-px h-3 bg-amber-600"></div>
           </div>
 
@@ -147,8 +153,8 @@
           <div class="w-full bg-slate-200 h-4 rounded-full overflow-hidden flex relative shadow-inner">
             <div id="bar-inperson" class="bg-emerald-500 h-full transition-all duration-500" style="width: 0%"></div>
             <div id="bar-proxy" class="bg-indigo-500 h-full transition-all duration-500" style="width: 0%"></div>
-            <div class="absolute top-0 bottom-0 left-[51.16%] w-0.5 bg-slate-900/60 z-10 pointer-events-none"></div>
-            <div class="absolute top-0 bottom-0 left-[55.81%] w-0.5 bg-amber-700/80 z-10 pointer-events-none"></div>
+            <div id="line-quorum" class="absolute top-0 bottom-0 w-0.5 bg-slate-900/60 z-10 pointer-events-none" style="left: 50%;"></div>
+            <div id="line-safe-quorum" class="absolute top-0 bottom-0 w-0.5 bg-amber-700/80 z-10 pointer-events-none" style="left: 55%;"></div>
           </div>
         </div>
 
@@ -159,8 +165,8 @@
             <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-slate-300"></span> 尚未回覆</span>
           </div>
           <div class="flex items-center gap-3 font-mono">
-            <span><i class="fa-solid fa-flag text-slate-500"></i> 成會人數: 44 人 (51.2%)</span>
-            <span><i class="fa-solid fa-shield text-amber-600"></i> 安全成會人數: 48 人 (55.8%)</span>
+            <span><i class="fa-solid fa-flag text-slate-500"></i> 成會人數: <span id="text-quorum-val">--</span> 人</span>
+            <span><i class="fa-solid fa-shield text-amber-600"></i> 安全成會人數: <span id="text-safe-quorum-val">--</span> 人</span>
           </div>
         </div>
       </div>
@@ -306,6 +312,7 @@
     
     let rawAttendanceList = [];
     let rawCandidatesList = [];
+    let currentThresholds = { totalMembers: 86, quorum: 44, safeQuorum: 48 };
 
     function cleanAndEscapeText(text) {
       if (!text) return "";
@@ -315,7 +322,6 @@
       return div.innerHTML;
     }
 
-    // 核心讀取函式：以 JSONP 動態載入，100% 規避瀏覽器 CORS 阻擋
     function fetchAllData() {
       const scriptId = 'gas_jsonp_script';
       const existingScript = document.getElementById(scriptId);
@@ -329,11 +335,14 @@
         if (s) s.remove();
 
         if (data && data.status === 'success') {
-          renderAttendance(data.attendance);
+          if (data.thresholds) {
+            currentThresholds = data.thresholds;
+          }
+          renderAttendance(data.attendance, currentThresholds);
           renderCandidates(data.candidates);
           document.getElementById('last-update').innerText = new Date().toLocaleTimeString('zh-TW', { hour12: false });
         } else {
-          alert('資料讀取異常：' + (data ? data.message : '未知錯誤'));
+          console.warn('資料讀取異常：', data);
         }
       };
 
@@ -341,27 +350,51 @@
       script.id = scriptId;
       script.src = `${GAS_URL}?callback=${callbackName}&t=${new Date().getTime()}`;
       script.onerror = function() {
-        console.warn('JSONP 連線發生異常，嘗試以備援模式載入...');
+        console.warn('JSONP 載入異常');
       };
       document.body.appendChild(script);
     }
 
-    function renderAttendance(att) {
+    function renderAttendance(att, thresholds) {
       if (!att) return;
       rawAttendanceList = att.list || [];
 
-      const totalMembers = 86;
-      const safeThreshold = 48;
+      const totalMembers = thresholds.totalMembers || 86;
+      const quorum = thresholds.quorum || 44;
+      const safeThreshold = thresholds.safeQuorum || 48;
+
       const replied = att.totalReplied || 0;
       const inPerson = att.inPerson || 0;
       const proxy = att.proxy || 0;
       const shortage = Math.max(0, safeThreshold - replied);
 
+      // 第 1 列門檻數值
+      document.getElementById('stat-total-members').innerHTML = `${totalMembers} <span class="text-sm font-normal text-slate-500">人</span>`;
+      document.getElementById('stat-quorum').innerHTML = `${quorum} <span class="text-sm font-normal text-slate-500">人</span>`;
+      document.getElementById('stat-safe-quorum').innerHTML = `${safeThreshold} <span class="text-sm font-normal text-amber-700">人</span>`;
+
+      // 第 2 列數值
       document.getElementById('stat-shortage').innerHTML = `${shortage} <span class="text-sm font-normal text-rose-500">人</span>`;
       document.getElementById('stat-replied').innerHTML = `${replied} <span class="text-sm font-normal text-blue-500">人</span>`;
       document.getElementById('stat-inperson').innerText = `${inPerson} 人`;
       document.getElementById('stat-proxy').innerText = `${proxy} 人`;
       document.getElementById('stat-subtotal').innerText = inPerson + proxy;
+
+      // 監測條動態位置與標籤
+      document.getElementById('bar-total-members-label').innerText = totalMembers;
+      document.getElementById('text-quorum-val').innerText = quorum;
+      document.getElementById('text-safe-quorum-val').innerText = safeThreshold;
+
+      const quorumPercent = ((quorum / totalMembers) * 100).toFixed(1);
+      const safePercent = ((safeThreshold / totalMembers) * 100).toFixed(1);
+
+      document.getElementById('mark-quorum').style.left = `${quorumPercent}%`;
+      document.getElementById('line-quorum').style.left = `${quorumPercent}%`;
+      document.getElementById('label-quorum-mark').innerText = `成會: ${quorum}人`;
+
+      document.getElementById('mark-safe-quorum').style.left = `${safePercent}%`;
+      document.getElementById('line-safe-quorum').style.left = `${safePercent}%`;
+      document.getElementById('label-safe-mark').innerText = `安全: ${safeThreshold}人`;
 
       const pInPerson = ((inPerson / totalMembers) * 100).toFixed(1);
       const pProxy = ((proxy / totalMembers) * 100).toFixed(1);
@@ -564,7 +597,6 @@
       document.getElementById('countdown').innerText = `${m}:${s}`;
     }, 1000);
 
-    // 啟動讀取
     fetchAllData();
   </script>
 </body>
