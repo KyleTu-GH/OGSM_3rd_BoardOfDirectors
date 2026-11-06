@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OGSM 第三屆第一次會員大會暨理監事改選 即時看板</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
+    body { font-family: 'Noto Sans TC', sans-serif; background-color: #f1f5f9; }
+    
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: pre-line;
+    }
+
+    .valign-top-flush {
+      vertical-align: top !important;
+      padding-top: 14px !important;
+      padding-bottom: 14px !important;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased p-3 md:p-6 min-h-screen flex flex-col justify-between">
+
+  <div class="max-w-7xl mx-auto w-full space-y-6">
+
+    <!-- 表頭導航列 -->
+    <header class="bg-white rounded-xl shadow-sm border border-slate-200 px-5 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">OG</div>
+        <div>
+          <h1 class="text-lg md:text-xl font-bold text-slate-800 tracking-tight">OGSM 第三屆第一次會員大會暨理監事改選</h1>
+          <p class="text-xs text-slate-500">即時動態數據整合儀表板（每 5 分鐘自動刷新）</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-3 text-xs md:text-sm">
+        <span class="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 text-slate-600 px-3 py-1.5 rounded-lg">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          上次更新：<strong id="last-update" class="font-mono">--:--:--</strong>
+        </span>
+        <span class="inline-flex items-center gap-1.5 bg-slate-50 border border-slate-200 text-slate-600 px-3 py-1.5 rounded-lg font-mono">
+          倒數：<strong id="countdown" class="text-blue-600">05:00</strong>
+        </span>
+        <button onclick="fetchAllData()" class="flex items-center gap-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-lg font-medium shadow-sm transition">
+          <i class="fa-solid fa-arrows-rotate"></i> 立即更新
+        </button>
+      </div>
+    </header>
+
+    <!-- 區塊 1：會員大會 出席統計 -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-4">
+        <div>
+          <span class="inline-block px-2.5 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 mb-1">出席統計</span>
+          <h2 class="text-lg font-bold text-slate-800">OGSM 第三屆第一次會員大會 (回覆)</h2>
+          <p class="text-xs text-slate-500">即時串接會員大會回覆表單，依「中文姓名」與「是否如期參加」欄位動態結算</p>
+        </div>
+        <a href="https://docs.google.com/spreadsheets/d/1dnBYlnKnoMr4e_cDFEGMwWz_cmlsqYCoV5om2Wi1Gm8/edit?gid=1078847818#gid=1078847818" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 font-medium hover:underline">
+          開啟會員大會回覆原始檔案 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+        </a>
+      </div>
+
+      <!-- 第 1 列：法定門檻 (3 組數字) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+          <div class="text-xs font-medium text-slate-500 mb-1">總會員數</div>
+          <div class="text-3xl font-extrabold text-slate-800 tracking-tight">86 <span class="text-sm font-normal text-slate-500">人</span></div>
+          <div class="text-[11px] text-slate-400 mt-2">固定結算基準會員數</div>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+          <div class="text-xs font-medium text-slate-500 mb-1">成會人數</div>
+          <div class="text-3xl font-extrabold text-slate-700 tracking-tight">44 <span class="text-sm font-normal text-slate-500">人</span></div>
+          <div class="text-[11px] text-slate-400 mt-2">= 總會員數/2 + 1</div>
+        </div>
+
+        <div class="bg-amber-50/60 rounded-xl p-4 border border-amber-200/80">
+          <div class="text-xs font-semibold text-amber-700 mb-1">安全成會人數</div>
+          <div class="text-3xl font-extrabold text-amber-600 tracking-tight">48 <span class="text-sm font-normal text-amber-700">人</span></div>
+          <div class="text-[11px] text-amber-700/80 mt-2">= 總會員數/2 + 5% (47.3人)</div>
+        </div>
+      </div>
+
+      <!-- 第 2 列：出席與尚缺人數 -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-rose-50/50 rounded-xl p-4 border border-rose-200" id="card-shortage">
+          <div class="text-xs font-semibold text-rose-700 mb-1">尚缺人數 (含委託書)</div>
+          <div class="text-3xl font-extrabold text-rose-600 tracking-tight" id="stat-shortage">-- <span class="text-sm font-normal text-rose-500">人</span></div>
+          <div class="text-[11px] text-rose-600/80 mt-2">= 安全成會人數 - 已回覆人數</div>
+        </div>
+
+        <div class="bg-blue-50/50 rounded-xl p-4 border border-blue-200 cursor-pointer hover:bg-blue-100/50 transition group" onclick="openRepliedModal()" title="點擊檢視已回覆名冊">
+          <div class="flex justify-between items-start">
+            <div class="text-xs font-semibold text-blue-700 mb-1">已回覆人數 (含委託書)</div>
+            <span class="text-[11px] text-blue-600 group-hover:underline flex items-center gap-1 font-medium">名單列表 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></span>
+          </div>
+          <div class="text-3xl font-extrabold text-blue-600 tracking-tight" id="stat-replied">-- <span class="text-sm font-normal text-blue-500">人</span></div>
+          <div class="text-[11px] text-blue-500 mt-2 flex justify-between items-center">
+            <span>「中文姓名」有效總計</span>
+            <span class="underline font-medium">點選另開</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col justify-between">
+          <div class="text-xs font-medium text-slate-500 mb-1">出席小計與合計</div>
+          <div class="space-y-1.5 text-xs">
+            <div class="flex justify-between items-center text-slate-700">
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>親自出席 (是)：</span>
+              <strong class="font-mono text-sm" id="stat-inperson">-- 人</strong>
+            </div>
+            <div class="flex justify-between items-center text-slate-700">
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-indigo-500"></span>委託出席：</span>
+              <strong class="font-mono text-sm" id="stat-proxy">-- 人</strong>
+            </div>
+            <div class="pt-1.5 border-t border-slate-200 flex justify-between items-center text-slate-500 text-[11px]">
+              <span>合計：<span id="stat-subtotal">--</span> 人</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 成會進度監測條 (含法定 44 人與安全 48 人雙門檻標記) -->
+      <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
+        <div class="flex justify-between items-center text-xs font-bold text-slate-700">
+          <span>成會進度監測 (總會員數 86 人)</span>
+          <span id="progress-percent" class="font-mono text-blue-600">0.0%</span>
+        </div>
+        
+        <div class="relative pt-6 pb-2">
+          <!-- 門檻標籤 -->
+          <div class="absolute top-0 left-[51.16%] -translate-x-1/2 flex flex-col items-center">
+            <span class="text-[10px] bg-slate-800 text-white px-1.5 py-0.5 rounded font-mono shadow-sm">成會門檻: 44人</span>
+            <div class="w-px h-3 bg-slate-800"></div>
+          </div>
+          <div class="absolute top-0 left-[55.81%] -translate-x-1/2 flex flex-col items-center">
+            <span class="text-[10px] bg-amber-600 text-white px-1.5 py-0.5 rounded font-mono shadow-sm">安全成會: 48人</span>
+            <div class="w-px h-3 bg-amber-600"></div>
+          </div>
+
+          <!-- 進度長條圖 -->
+          <div class="w-full bg-slate-200 h-4 rounded-full overflow-hidden flex relative shadow-inner">
+            <div id="bar-inperson" class="bg-emerald-500 h-full transition-all duration-500" style="width: 0%"></div>
+            <div id="bar-proxy" class="bg-indigo-500 h-full transition-all duration-500" style="width: 0%"></div>
+            <div class="absolute top-0 bottom-0 left-[51.16%] w-0.5 bg-slate-900/60 z-10 pointer-events-none"></div>
+            <div class="absolute top-0 bottom-0 left-[55.81%] w-0.5 bg-amber-700/80 z-10 pointer-events-none"></div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between text-[11px] text-slate-500 pt-1">
+          <div class="flex items-center gap-4">
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-emerald-500"></span> 親自出席 (是)</span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-indigo-500"></span> 委託出席 (否，會委託出席)</span>
+            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-slate-300"></span> 尚未回覆</span>
+          </div>
+          <div class="flex items-center gap-3 font-mono">
+            <span><i class="fa-solid fa-flag text-slate-500"></i> 成會人數: 44 人 (51.2%)</span>
+            <span><i class="fa-solid fa-shield text-amber-600"></i> 安全成會人數: 48 人 (55.8%)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 區塊 2：理監事候選人 報名名單 -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 space-y-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-4">
+        <div>
+          <span class="inline-block px-2.5 py-0.5 rounded text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200 mb-1">理監事改選</span>
+          <h2 class="text-lg font-bold text-slate-800">第三屆 &lt;理事候選人&gt; 報名表單 (回覆)</h2>
+          <p class="text-xs text-slate-500">依「理事 → 監事」分類並按報名順序條列呈現；簡歷與建議向上緊密對齊並保留前 3 行，點選姓名可另開方格檢視完整資料</p>
+        </div>
+        <a href="https://docs.google.com/spreadsheets/d/1InytmIlFeOuxQpfMHRD4I7jktg8LPBKaHX1gXwjR_60/edit?gid=387994811#gid=387994811" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-purple-600 hover:text-purple-800 font-medium hover:underline">
+          開啟候選人報名原始檔案 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+        </a>
+      </div>
+
+      <!-- 表頭席次方格 -->
+      <div class="space-y-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-slate-900 text-white rounded-xl p-4 flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-amber-400 text-lg">
+                <i class="fa-solid fa-users-gear"></i>
+              </div>
+              <div>
+                <div class="text-[11px] text-slate-400 font-medium">目標理監事席次：</div>
+                <div class="text-sm font-bold text-slate-200">第三屆理監事改選目標</div>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-slate-400">理事目標席次</span>
+              <div class="font-mono text-base font-bold text-white">正選 <span class="text-amber-400 text-lg">9</span> / 候補 3</div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 text-white rounded-xl p-4 flex items-center justify-between shadow-sm">
+            <div class="text-right w-full">
+              <span class="text-xs text-slate-400">監事目標席次</span>
+              <div class="font-mono text-base font-bold text-white">正選 <span class="text-amber-400 text-lg">3</span> / 候補 1</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 報名席次方格 (對應欄位「參選的職務」統計) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-blue-50/70 border border-blue-200 rounded-xl p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white text-base">
+                <i class="fa-solid fa-user-tie"></i>
+              </div>
+              <div>
+                <div class="text-xs font-semibold text-blue-900">理事報名席次</div>
+                <div class="text-[11px] text-blue-600">依欄位「參選的職務」統計</div>
+              </div>
+            </div>
+            <div class="text-2xl font-extrabold text-blue-700 font-mono">
+              <span id="registered-director-count">--</span> <span class="text-xs font-normal text-blue-500">人已報名</span>
+            </div>
+          </div>
+
+          <div class="bg-purple-50/70 border border-purple-200 rounded-xl p-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-purple-600 flex items-center justify-center text-white text-base">
+                <i class="fa-solid fa-user-check"></i>
+              </div>
+              <div>
+                <div class="text-xs font-semibold text-purple-900">監事報名席次</div>
+                <div class="text-[11px] text-purple-600">依欄位「參選的職務」統計</div>
+              </div>
+            </div>
+            <div class="text-2xl font-extrabold text-purple-700 font-mono">
+              <span id="registered-supervisor-count">--</span> <span class="text-xs font-normal text-purple-500">人已報名</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 理事候選人清單 -->
+      <div class="space-y-3 pt-2">
+        <div class="flex items-center justify-between border-b-2 border-blue-600 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-blue-600"></span>
+            <h3 class="text-base font-bold text-slate-800">理事候選人名單</h3>
+            <span id="badge-directors" class="text-xs bg-blue-100 text-blue-800 font-medium px-2 py-0.5 rounded-full">載入中...</span>
+          </div>
+          <span class="text-xs text-slate-400">依報名時間排序 (正選 9 / 候補 3)</span>
+        </div>
+        <div class="overflow-x-auto rounded-lg border border-slate-200">
+          <table class="w-full text-left text-sm border-collapse bg-white">
+            <thead class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-4 w-28 text-center">參選職務</th>
+                <th class="py-3 px-4 w-40">姓名 (點擊檢視)</th>
+                <th class="py-3 px-4 w-5/12">個人簡歷 (前3行)</th>
+                <th class="py-3 px-4 w-5/12">對協會建議 (前3行)</th>
+              </tr>
+            </thead>
+            <tbody id="table-directors" class="divide-y divide-slate-100">
+              <tr><td colspan="4" class="text-center py-8 text-slate-400">正在讀取最新資料...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 監事候選人清單 -->
+      <div class="space-y-3 pt-4">
+        <div class="flex items-center justify-between border-b-2 border-purple-600 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-purple-600"></span>
+            <h3 class="text-base font-bold text-slate-800">監事候選人名單</h3>
+            <span id="badge-supervisors" class="text-xs bg-purple-100 text-purple-800 font-medium px-2 py-0.5 rounded-full">載入中...</span>
+          </div>
+          <span class="text-xs text-slate-400">依報名時間排序 (正選 3 / 候補 1)</span>
+        </div>
+        <div class="overflow-x-auto rounded-lg border border-slate-200">
+          <table class="w-full text-left text-sm border-collapse bg-white">
+            <thead class="bg-slate-50 text-slate-600 text-xs uppercase font-semibold border-b border-slate-200">
+              <tr>
+                <th class="py-3 px-4 w-28 text-center">參選職務</th>
+                <th class="py-3 px-4 w-40">姓名 (點擊檢視)</th>
+                <th class="py-3 px-4 w-5/12">個人簡歷 (前3行)</th>
+                <th class="py-3 px-4 w-5/12">對協會建議 (前3行)</th>
+              </tr>
+            </thead>
+            <tbody id="table-supervisors" class="divide-y divide-slate-100">
+              <tr><td colspan="4" class="text-center py-8 text-slate-400">正在讀取最新資料...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="mt-8 text-center text-xs text-slate-400 py-4">
+    OGSM 第三屆第一次會員大會 ‧ 資料來源由 Google Apps Script 即時串接 ‧ 每 5 分鐘自動刷新 ‧ GitHub Pages Ready
+  </footer>
+
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxhC8RqEUkRwPF8NULpV3OatgNJo7En_bjzYOp4sFmhu3ZLkK02MUJdF8g0jlFNP6PN7Q/exec";
+    
+    let rawAttendanceList = [];
+    let rawCandidatesList = [];
+
+    function cleanAndEscapeText(text) {
+      if (!text) return "";
+      const cleaned = String(text).replace(/^[\r\n\s]+/, '').replace(/[\r\n\s]+$/, '');
+      const div = document.createElement('div');
+      div.innerText = cleaned;
+      return div.innerHTML;
+    }
+
+    // 核心讀取函式：以 JSONP 動態載入，100% 規避瀏覽器 CORS 阻擋
+    function fetchAllData() {
+      const scriptId = 'gas_jsonp_script';
+      const existingScript = document.getElementById(scriptId);
+      if (existingScript) existingScript.remove();
+
+      const callbackName = 'gasCallback_' + Math.floor(Math.random() * 1000000);
+      
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        const s = document.getElementById(scriptId);
+        if (s) s.remove();
+
+        if (data && data.status === 'success') {
+          renderAttendance(data.attendance);
+          renderCandidates(data.candidates);
+          document.getElementById('last-update').innerText = new Date().toLocaleTimeString('zh-TW', { hour12: false });
+        } else {
+          alert('資料讀取異常：' + (data ? data.message : '未知錯誤'));
+        }
+      };
+
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = `${GAS_URL}?callback=${callbackName}&t=${new Date().getTime()}`;
+      script.onerror = function() {
+        console.warn('JSONP 連線發生異常，嘗試以備援模式載入...');
+      };
+      document.body.appendChild(script);
+    }
+
+    function renderAttendance(att) {
+      if (!att) return;
+      rawAttendanceList = att.list || [];
+
+      const totalMembers = 86;
+      const safeThreshold = 48;
+      const replied = att.totalReplied || 0;
+      const inPerson = att.inPerson || 0;
+      const proxy = att.proxy || 0;
+      const shortage = Math.max(0, safeThreshold - replied);
+
+      document.getElementById('stat-shortage').innerHTML = `${shortage} <span class="text-sm font-normal text-rose-500">人</span>`;
+      document.getElementById('stat-replied').innerHTML = `${replied} <span class="text-sm font-normal text-blue-500">人</span>`;
+      document.getElementById('stat-inperson').innerText = `${inPerson} 人`;
+      document.getElementById('stat-proxy').innerText = `${proxy} 人`;
+      document.getElementById('stat-subtotal').innerText = inPerson + proxy;
+
+      const pInPerson = ((inPerson / totalMembers) * 100).toFixed(1);
+      const pProxy = ((proxy / totalMembers) * 100).toFixed(1);
+      const pTotal = ((replied / totalMembers) * 100).toFixed(1);
+
+      document.getElementById('bar-inperson').style.width = `${pInPerson}%`;
+      document.getElementById('bar-proxy').style.width = `${pProxy}%`;
+      document.getElementById('progress-percent').innerText = `${pTotal}% (${replied}/${totalMembers}人)`;
+    }
+
+    function renderCandidates(candidates) {
+      if (!candidates) return;
+      rawCandidatesList = candidates;
+
+      const directors = candidates.filter(c => c.role === '理事');
+      const supervisors = candidates.filter(c => c.role === '監事');
+
+      document.getElementById('registered-director-count').innerText = directors.length;
+      document.getElementById('registered-supervisor-count').innerText = supervisors.length;
+
+      document.getElementById('badge-directors').innerText = `已登記 ${directors.length} 位`;
+      document.getElementById('badge-supervisors').innerText = `已登記 ${supervisors.length} 位`;
+
+      renderTableRows('table-directors', directors, '理事');
+      renderTableRows('table-supervisors', supervisors, '監事');
+    }
+
+    function renderTableRows(tableId, list, roleType) {
+      const tbody = document.getElementById(tableId);
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-slate-400">目前尚無${roleType}候選人登記</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map((c, idx) => {
+        const roleBadge = c.role === '理事'
+          ? `<span class="inline-block px-2.5 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">理事</span>`
+          : `<span class="inline-block px-2.5 py-1 rounded text-xs font-semibold bg-purple-100 text-purple-800 border border-purple-200">監事</span>`;
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition-colors">
+            <td class="valign-top-flush text-center">
+              ${roleBadge}
+              <div class="text-[10px] text-slate-400 font-mono mt-1">#${idx + 1}</div>
+            </td>
+            <td class="valign-top-flush">
+              <a href="javascript:void(0)" onclick="openCandidateDetail('${idx}', '${c.role}')" class="text-blue-600 hover:text-blue-800 font-bold hover:underline inline-flex items-center gap-1">
+                ${cleanAndEscapeText(c.name)} <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+              </a>
+            </td>
+            <td class="valign-top-flush">
+              <div class="text-xs text-slate-700 leading-snug line-clamp-3">
+                ${cleanAndEscapeText(c.bio)}
+              </div>
+            </td>
+            <td class="valign-top-flush">
+              <div class="text-xs text-slate-700 leading-snug line-clamp-3">
+                ${cleanAndEscapeText(c.suggestion)}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openCandidateDetail(index, role) {
+      const list = rawCandidatesList.filter(c => c.role === role);
+      const c = list[index];
+      if (!c) return;
+
+      const newWin = window.open("", "_blank", "width=650,height=600,scrollbars=yes,resizable=yes");
+      if (!newWin) {
+        alert("瀏覽器阻擋了彈出視窗，請允許彈出視窗後重試。");
+        return;
+      }
+
+      newWin.document.write(`
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+        <head>
+          <meta charset="UTF-8">
+          <title>${c.name} - 候選人詳細資料</title>
+          <script src="https://cdn.tailwindcss.com"><\/script>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
+            body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; padding: 24px; }
+          </style>
+        </head>
+        <body class="text-slate-800">
+          <div class="max-w-xl mx-auto bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+            <div class="p-6 bg-slate-900 text-white flex justify-between items-center">
+              <div>
+                <span class="inline-block px-2.5 py-0.5 rounded text-xs font-semibold ${c.role === '理事' ? 'bg-blue-600 text-white' : 'bg-purple-600 text-white'} mb-1.5">${c.role}候選人</span>
+                <h1 class="text-2xl font-bold">${c.name}</h1>
+              </div>
+              <button onclick="window.close()" class="text-slate-400 hover:text-white text-sm bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition">關閉視窗</button>
+            </div>
+            <div class="p-6 space-y-6">
+              <div>
+                <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <i class="fa-solid fa-id-card text-blue-600"></i> 個人簡歷 / 核心經歷
+                </h2>
+                <div class="p-4 bg-slate-50 rounded-xl text-sm leading-relaxed text-slate-700 whitespace-pre-wrap border border-slate-100">${c.bio}</div>
+              </div>
+              <div>
+                <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <i class="fa-solid fa-comment-dots text-purple-600"></i> 對協會的建議、想法或期許
+                </h2>
+                <div class="p-4 bg-slate-50 rounded-xl text-sm leading-relaxed text-slate-700 whitespace-pre-wrap border border-slate-100">${c.suggestion}</div>
+              </div>
+            </div>
+          </div>
+        </body>
+        </html>
+      `);
+      newWin.document.close();
+    }
+
+    function openRepliedModal() {
+      const sorted = [...rawAttendanceList].sort((a, b) => {
+        const isAInPerson = a.status.indexOf("是") !== -1 || a.status === "親自出席";
+        const isBInPerson = b.status.indexOf("是") !== -1 || b.status === "親自出席";
+        if (isAInPerson && !isBInPerson) return -1;
+        if (!isAInPerson && isBInPerson) return 1;
+        return 0;
+      });
+
+      const newWin = window.open("", "_blank", "width=600,height=700,scrollbars=yes,resizable=yes");
+      if (!newWin) {
+        alert("瀏覽器阻擋了彈出視窗，請允許彈出視窗後重試。");
+        return;
+      }
+
+      newWin.document.write(`
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+        <head>
+          <meta charset="UTF-8">
+          <title>已回覆會員名單</title>
+          <script src="https://cdn.tailwindcss.com"><\/script>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
+            body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; padding: 20px; }
+          </style>
+        </head>
+        <body class="text-slate-800">
+          <div class="max-w-lg mx-auto bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+            <div class="p-4 bg-slate-900 text-white flex justify-between items-center">
+              <div>
+                <h1 class="text-base font-bold">已回覆會員名冊</h1>
+                <p class="text-xs text-slate-400">排序：親自出席 → 委託出席 (共 ${sorted.length} 位)</p>
+              </div>
+              <button onclick="window.close()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-white">關閉</button>
+            </div>
+            <div class="overflow-y-auto max-h-[580px]">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 text-slate-600 text-xs uppercase sticky top-0 border-b border-slate-200">
+                  <tr>
+                    <th class="py-2.5 px-4 w-16 text-center">序號</th>
+                    <th class="py-2.5 px-4">會員姓名</th>
+                    <th class="py-2.5 px-4 text-center">出席狀態</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${sorted.map((item, idx) => {
+                    const isInPerson = item.status.indexOf("是") !== -1 || item.status === "親自出席";
+                    const badge = isInPerson
+                      ? '<span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">親自出席</span>'
+                      : '<span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800">委託出席</span>';
+                    return `
+                      <tr class="hover:bg-slate-50">
+                        <td class="py-2.5 px-4 text-center text-xs font-mono text-slate-400">${idx + 1}</td>
+                        <td class="py-2.5 px-4 font-bold text-slate-800">${item.name}</td>
+                        <td class="py-2.5 px-4 text-center">${badge}</td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </body>
+        </html>
+      `);
+      newWin.document.close();
+    }
+
+    const REFRESH_SECONDS = 300;
+    let timer = REFRESH_SECONDS;
+
+    setInterval(() => {
+      timer--;
+      if (timer <= 0) {
+        fetchAllData();
+        timer = REFRESH_SECONDS;
+      }
+      const m = String(Math.floor(timer / 60)).padStart(2, '0');
+      const s = String(timer % 60).padStart(2, '0');
+      document.getElementById('countdown').innerText = `${m}:${s}`;
+    }, 1000);
+
+    // 啟動讀取
+    fetchAllData();
+  </script>
+</body>
+</html>
