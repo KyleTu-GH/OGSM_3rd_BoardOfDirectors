@@ -55,21 +55,9 @@
 
     <!-- 區塊 1：會員大會 出席統計 -->
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 space-y-6">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-4">
-        <div>
-          <span class="inline-block px-2.5 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 mb-1">出席統計</span>
-          <h2 class="text-lg font-bold text-slate-800">OGSM 第三屆第一次會員大會 (回覆)</h2>
-          <p class="text-xs text-slate-500">門檻數據取自基準表；出席依回覆表「中文姓名」與「是否如期參加」欄位動態結算</p>
-        </div>
-        <div class="flex items-center gap-3 text-xs">
-          <a href="https://docs.google.com/spreadsheets/d/111Wn34ig9r49K2yTweTPqY7iy7k8SWNd6VPatAlmbr0/edit?gid=286885096#gid=286885096" target="_blank" class="text-slate-600 hover:text-slate-900 font-medium hover:underline">
-            門檻基準表 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-          </a>
-          <span class="text-slate-300">|</span>
-          <a href="https://docs.google.com/spreadsheets/d/111Wn34ig9r49K2yTweTPqY7iy7k8SWNd6VPatAlmbr0/edit?gid=1674469044#gid=1674469044" target="_blank" class="text-blue-600 hover:text-blue-800 font-medium hover:underline">
-            大會回覆表 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-          </a>
-        </div>
+      <div class="border-b border-slate-100 pb-3">
+        <span class="inline-block px-2.5 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 mb-1">出席統計</span>
+        <h2 class="text-lg font-bold text-slate-800">OGSM 第三屆第一次會員大會 (回覆)</h2>
       </div>
 
       <!-- 第 1 列：門檻指標 (基準表動態取得) -->
@@ -93,7 +81,7 @@
         </div>
       </div>
 
-      <!-- 第 2 列：出席與尚缺人數 (含「回覆人數-日統計」按鈕) -->
+      <!-- 第 2 列：出席與尚缺人數 (左：已回覆，中：小計與合計，右：尚缺人數) -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <!-- 1. 已回覆人數 (含委託書) -->
         <div class="bg-blue-50/50 rounded-xl p-4 border border-blue-200 flex flex-col justify-between">
@@ -182,15 +170,9 @@
 
     <!-- 區塊 2：理監事候選人 報名名單 -->
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 space-y-6">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-4">
-        <div>
-          <span class="inline-block px-2.5 py-0.5 rounded text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200 mb-1">理監事改選</span>
-          <h2 class="text-lg font-bold text-slate-800">第三屆 &lt;理事候選人&gt; 報名表單 (回覆)</h2>
-          <p class="text-xs text-slate-500">依「理事 → 監事」分類並按報名順序條列呈現；簡歷與建議向上緊密對齊並保留前 3 行，點選姓名可另開方格檢視完整資料</p>
-        </div>
-        <a href="https://docs.google.com/spreadsheets/d/1InytmIlFeOuxQpfMHRD4I7jktg8LPBKaHX1gXwjR_60/edit?gid=387994811#gid=387994811" target="_blank" class="inline-flex items-center gap-1.5 text-xs text-purple-600 hover:text-purple-800 font-medium hover:underline">
-          開啟候選人報名原始檔案 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-        </a>
+      <div class="border-b border-slate-100 pb-3">
+        <span class="inline-block px-2.5 py-0.5 rounded text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200 mb-1">理監事改選</span>
+        <h2 class="text-lg font-bold text-slate-800">第三屆 &lt;理事候選人&gt; 報名表單 (回覆)</h2>
       </div>
 
       <!-- 表頭席次方格 -->
@@ -229,7 +211,6 @@
               </div>
               <div>
                 <div class="text-xs font-semibold text-blue-900">理事報名席次</div>
-                <div class="text-[11px] text-blue-600">依欄位「參選的職務」統計</div>
               </div>
             </div>
             <div class="text-2xl font-extrabold text-blue-700 font-mono">
@@ -244,7 +225,6 @@
               </div>
               <div>
                 <div class="text-xs font-semibold text-purple-900">監事報名席次</div>
-                <div class="text-[11px] text-purple-600">依欄位「參選的職務」統計</div>
               </div>
             </div>
             <div class="text-2xl font-extrabold text-purple-700 font-mono">
@@ -262,7 +242,7 @@
             <h3 class="text-base font-bold text-slate-800">理事候選人名單</h3>
             <span id="badge-directors" class="text-xs bg-blue-100 text-blue-800 font-medium px-2 py-0.5 rounded-full">載入中...</span>
           </div>
-          <span class="text-xs text-slate-400">依報名時間排序 (正選 9 / 候補 3)</span>
+          <span class="text-xs text-slate-400">依報名時間先後排序 (正選 9 / 候補 3)</span>
         </div>
         <div class="overflow-x-auto rounded-lg border border-slate-200">
           <table class="w-full text-left text-sm border-collapse bg-white">
@@ -289,7 +269,7 @@
             <h3 class="text-base font-bold text-slate-800">監事候選人名單</h3>
             <span id="badge-supervisors" class="text-xs bg-purple-100 text-purple-800 font-medium px-2 py-0.5 rounded-full">載入中...</span>
           </div>
-          <span class="text-xs text-slate-400">依報名時間排序 (正選 3 / 候補 1)</span>
+          <span class="text-xs text-slate-400">依報名時間先後排序 (正選 3 / 候補 1)</span>
         </div>
         <div class="overflow-x-auto rounded-lg border border-slate-200">
           <table class="w-full text-left text-sm border-collapse bg-white">
@@ -522,17 +502,17 @@
       newWin.document.close();
     }
 
-    // 點選名單列表：顯示已回覆會員名冊
+    // 名單列表：左右併列
     function openRepliedModal() {
-      const sorted = [...rawAttendanceList].sort((a, b) => {
-        const isAInPerson = a.status.indexOf("是") !== -1 || a.status === "親自出席";
-        const isBInPerson = b.status.indexOf("是") !== -1 || b.status === "親自出席";
-        if (isAInPerson && !isBInPerson) return -1;
-        if (!isAInPerson && isBInPerson) return 1;
-        return 0;
+      const inPersonList = rawAttendanceList.filter(item => {
+        return item.status.indexOf("是") !== -1 || item.status === "親自出席";
       });
 
-      const newWin = window.open("", "_blank", "width=600,height=700,scrollbars=yes,resizable=yes");
+      const proxyList = rawAttendanceList.filter(item => {
+        return !(item.status.indexOf("是") !== -1 || item.status === "親自出席");
+      });
+
+      const newWin = window.open("", "_blank", "width=920,height=720,scrollbars=yes,resizable=yes");
       if (!newWin) {
         alert("瀏覽器阻擋了彈出視窗，請允許彈出視窗後重試。");
         return;
@@ -543,47 +523,92 @@
         <html lang="zh-TW">
         <head>
           <meta charset="UTF-8">
-          <title>已回覆會員名單</title>
+          <title>已回覆會員名冊 (左右併列)</title>
           <script src="https://cdn.tailwindcss.com"><\/script>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
             body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; padding: 20px; }
           </style>
         </head>
         <body class="text-slate-800">
-          <div class="max-w-lg mx-auto bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden">
+          <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
             <div class="p-4 bg-slate-900 text-white flex justify-between items-center">
               <div>
-                <h1 class="text-base font-bold">已回覆會員名冊</h1>
-                <p class="text-xs text-slate-400">排序：親自出席 → 委託出席 (共 ${sorted.length} 位)</p>
+                <h1 class="text-base font-bold">已回覆會員名冊（左右併列檢視）</h1>
+                <p class="text-xs text-slate-400">親自出席：${inPersonList.length} 人 ｜ 委託出席：${proxyList.length} 人 ｜ 總計：${inPersonList.length + proxyList.length} 人</p>
               </div>
-              <button onclick="window.close()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-white">關閉</button>
+              <button onclick="window.close()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-white border border-slate-700">關閉視窗</button>
             </div>
-            <div class="overflow-y-auto max-h-[580px]">
-              <table class="w-full text-left text-sm">
-                <thead class="bg-slate-50 text-slate-600 text-xs uppercase sticky top-0 border-b border-slate-200">
-                  <tr>
-                    <th class="py-2.5 px-4 w-16 text-center">序號</th>
-                    <th class="py-2.5 px-4">會員姓名</th>
-                    <th class="py-2.5 px-4 text-center">出席狀態</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                  ${sorted.map((item, idx) => {
-                    const isInPerson = item.status.indexOf("是") !== -1 || item.status === "親自出席";
-                    const badge = isInPerson
-                      ? '<span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">親自出席</span>'
-                      : '<span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800">委託出席</span>';
-                    return `
-                      <tr class="hover:bg-slate-50">
-                        <td class="py-2.5 px-4 text-center text-xs font-mono text-slate-400">${idx + 1}</td>
-                        <td class="py-2.5 px-4 font-bold text-slate-800">${item.name}</td>
-                        <td class="py-2.5 px-4 text-center">${badge}</td>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+              
+              <!-- 左側：親自出席 -->
+              <div class="flex flex-col">
+                <div class="p-3 bg-emerald-50 border-b border-emerald-100 flex items-center justify-between">
+                  <span class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> 親自出席 (是)
+                  </span>
+                  <span class="text-xs font-mono font-bold bg-emerald-200/60 text-emerald-900 px-2 py-0.5 rounded-full">${inPersonList.length} 人</span>
+                </div>
+                <div class="overflow-y-auto max-h-[560px]">
+                  <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 text-slate-500 text-xs uppercase sticky top-0 border-b border-slate-100">
+                      <tr>
+                        <th class="py-2 px-3 w-12 text-center">序號</th>
+                        <th class="py-2 px-3">會員姓名</th>
+                        <th class="py-2 px-3 text-right">狀態標籤</th>
                       </tr>
-                    `;
-                  }).join('')}
-                </tbody>
-              </table>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                      ${inPersonList.map((item, idx) => `
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                          <td class="py-2 px-3 text-center text-xs font-mono text-slate-400">${idx + 1}</td>
+                          <td class="py-2 px-3 font-semibold text-slate-800">${item.name}</td>
+                          <td class="py-2 px-3 text-right">
+                            <span class="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">親自出席</span>
+                          </td>
+                        </tr>
+                      `).join('')}
+                      ${inPersonList.length === 0 ? '<tr><td colspan="3" class="text-center py-6 text-slate-400 text-xs">尚無親自出席回覆</td></tr>' : ''}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- 右側：委託出席 -->
+              <div class="flex flex-col">
+                <div class="p-3 bg-indigo-50 border-b border-indigo-100 flex items-center justify-between">
+                  <span class="text-xs font-bold text-indigo-800 flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> 委託出席 (否，會委託出席)
+                  </span>
+                  <span class="text-xs font-mono font-bold bg-indigo-200/60 text-indigo-900 px-2 py-0.5 rounded-full">${proxyList.length} 人</span>
+                </div>
+                <div class="overflow-y-auto max-h-[560px]">
+                  <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 text-slate-500 text-xs uppercase sticky top-0 border-b border-slate-100">
+                      <tr>
+                        <th class="py-2 px-3 w-12 text-center">序號</th>
+                        <th class="py-2 px-3">會員姓名</th>
+                        <th class="py-2 px-3 text-right">狀態標籤</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                      ${proxyList.map((item, idx) => `
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                          <td class="py-2 px-3 text-center text-xs font-mono text-slate-400">${idx + 1}</td>
+                          <td class="py-2 px-3 font-semibold text-slate-800">${item.name}</td>
+                          <td class="py-2 px-3 text-right">
+                            <span class="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-100 text-indigo-800">委託出席</span>
+                          </td>
+                        </tr>
+                      `).join('')}
+                      ${proxyList.length === 0 ? '<tr><td colspan="3" class="text-center py-6 text-slate-400 text-xs">尚無委託出席回覆</td></tr>' : ''}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
             </div>
           </div>
         </body>
@@ -592,11 +617,10 @@
       newWin.document.close();
     }
 
-    // 點選「回覆人數-日統計」：另開視窗呈現 2026/11/07 至 2026/12/19 每日柱狀圖
+    // 柱狀圖：左側 Y 軸上限在 75% 以下，柱體調淺
     function openDailyStatsModal() {
-      // 1. 生成日期序列 (2026/11/07 至 2026/12/19)
-      const startDate = new Date(2026, 10, 7); // 月份 10 代表 11月
-      const endDate = new Date(2026, 11, 19);  // 月份 11 代表 12月
+      const startDate = new Date(2026, 10, 7);
+      const endDate = new Date(2026, 11, 19);
       const dateList = [];
       const dailyMap = {};
 
@@ -611,14 +635,12 @@
         curr.setDate(curr.getDate() + 1);
       }
 
-      // 2. 統計每日回覆人數
-      let beforeStartCount = 0; // 11/07 之前填寫的人數
+      let beforeStartCount = 0;
       rawAttendanceList.forEach(item => {
         if (!item.timestamp) {
           beforeStartCount++;
           return;
         }
-        // 解析時間戳記字串 (格式如 2026/10/28 上午 9:44:48 或 2026-10-28)
         let cleanTime = item.timestamp.replace(/-/g, '/');
         let matched = cleanTime.match(/(\d{4}\/\d{1,2}\/\d{1,2})/);
         if (matched) {
@@ -634,20 +656,22 @@
         }
       });
 
-      // 3. 計算每日截至當日 23:59 的累積回覆人數
       let runningTotal = beforeStartCount;
       const chartLabels = [];
       const dailyData = [];
       const cumData = [];
 
       dateList.forEach(k => {
-        chartLabels.push(k.substring(5)); // 簡化為 MM/DD
+        chartLabels.push(k.substring(5));
         dailyData.push(dailyMap[k].daily);
         runningTotal += dailyMap[k].daily;
         cumData.push(runningTotal);
       });
 
-      // 4. 開啟新視窗並利用 Chart.js 渲染柱狀圖
+      // 計算左側 Y 軸最大刻度：讓最大值不超過 75% 總高 (max / 0.75)
+      const maxDaily = Math.max(...dailyData, 0);
+      const yLeftSuggestedMax = Math.max(Math.ceil((maxDaily || 1) / 0.75), 4);
+
       const newWin = window.open("", "_blank", "width=900,height=680,scrollbars=yes,resizable=yes");
       if (!newWin) {
         alert("瀏覽器阻擋了彈出視窗，請允許彈出視窗後重試。");
@@ -693,7 +717,6 @@
                 </div>
               </div>
 
-              <!-- 柱狀圖容器 -->
               <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs relative" style="height: 380px;">
                 <canvas id="dailyChart"></canvas>
               </div>
@@ -711,9 +734,9 @@
                     type: 'bar',
                     label: '當日新增回覆 (人)',
                     data: ${JSON.stringify(dailyData)},
-                    backgroundColor: 'rgba(59, 130, 246, 0.75)',
-                    borderColor: 'rgb(37, 99, 235)',
-                    borderWidth: 1,
+                    backgroundColor: 'rgba(147, 197, 253, 0.45)', // 淺柔天空藍色塊
+                    borderColor: 'rgba(96, 165, 250, 0.7)',
+                    borderWidth: 1.5,
                     borderRadius: 4,
                     yAxisID: 'y'
                   },
@@ -722,7 +745,7 @@
                     label: '截至當日累計人數 (人)',
                     data: ${JSON.stringify(cumData)},
                     borderColor: 'rgb(16, 185, 129)',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    backgroundColor: 'rgba(16, 185, 129, 0.08)',
                     borderWidth: 2,
                     pointRadius: 2,
                     tension: 0.2,
@@ -743,6 +766,7 @@
                     type: 'linear',
                     position: 'left',
                     beginAtZero: true,
+                    suggestedMax: ${yLeftSuggestedMax}, // 控制上限不超過 75% 總高
                     title: { display: true, text: '當日新增 (人)' },
                     ticks: { precision: 0 }
                   },
