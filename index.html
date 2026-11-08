@@ -53,11 +53,16 @@
       </div>
     </header>
 
-    <!-- 區塊 1：會員大會 出席統計 -->
+    <!-- 區塊 1：會員大會 出席統計 (含 2026年度會員名單 密碼保護連結) -->
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 space-y-6">
-      <div class="border-b border-slate-100 pb-3">
-        <span class="inline-block px-2.5 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 mb-1">出席統計</span>
-        <h2 class="text-lg font-bold text-slate-800">OGSM 第三屆第一次會員大會 (回覆)</h2>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-100 pb-3">
+        <div>
+          <span class="inline-block px-2.5 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200 mb-1">出席統計</span>
+          <h2 class="text-lg font-bold text-slate-800">OGSM 第三屆第一次會員大會 (回覆)</h2>
+        </div>
+        <a href="javascript:void(0)" onclick="openProtectedMemberList()" class="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 font-semibold hover:underline bg-blue-50/70 border border-blue-200 px-3 py-1.5 rounded-lg transition shadow-2xs">
+          <i class="fa-solid fa-lock text-[11px] text-blue-500"></i> 2026年度會員名單 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+        </a>
       </div>
 
       <!-- 第 1 列：門檻指標 (基準表動態取得) -->
@@ -300,6 +305,7 @@
     
     let rawAttendanceList = [];
     let rawCandidatesList = [];
+    let rawMemberFullList = [];
     let currentThresholds = { totalMembers: 84, quorum: 42, safeQuorum: 46 };
 
     function cleanAndEscapeText(text) {
@@ -325,6 +331,9 @@
         if (data && data.status === 'success') {
           if (data.thresholds) {
             currentThresholds = data.thresholds;
+          }
+          if (data.memberFullList) {
+            rawMemberFullList = data.memberFullList;
           }
           renderAttendance(data.attendance, currentThresholds);
           renderCandidates(data.candidates);
@@ -502,6 +511,146 @@
       newWin.document.close();
     }
 
+    // 2026年度會員名單 (密碼驗證：1220；雙欄並列：左邊未回覆 --，右邊本人/委託書)
+    function openProtectedMemberList() {
+      const pwd = prompt("請輸入查看密碼：");
+      if (pwd === null) return;
+      if (pwd.trim() !== "1220") {
+        alert("密碼錯誤，無法查看會員名單！");
+        return;
+      }
+
+      const list = rawMemberFullList || [];
+
+      // 1. 左邊：出席？ = "--"
+      const unrepliedList = list.filter(m => m.status === '--' || !m.status);
+
+      // 2. 右邊：出席？ = "本人" 或 "委託書" (本人在前，委託書在後)
+      const repliedList = list.filter(m => m.status !== '--' && m.status).sort((a, b) => {
+        const isAPerson = a.status.indexOf('本人') !== -1;
+        const isBPerson = b.status.indexOf('本人') !== -1;
+        if (isAPerson && !isBPerson) return -1;
+        if (!isAPerson && isBPerson) return 1;
+        return 0;
+      });
+
+      const newWin = window.open("", "_blank", "width=960,height=760,scrollbars=yes,resizable=yes");
+      if (!newWin) {
+        alert("瀏覽器阻擋了彈出視窗，請允許彈出視窗後重試。");
+        return;
+      }
+
+      newWin.document.write(`
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+        <head>
+          <meta charset="UTF-8">
+          <title>2026年度會員名單 (左右雙欄)</title>
+          <script src="https://cdn.tailwindcss.com"><\/script>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
+            body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; padding: 20px; }
+          </style>
+        </head>
+        <body class="text-slate-800">
+          <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+            <!-- 視窗頂部標題列 -->
+            <div class="p-4 bg-slate-900 text-white flex justify-between items-center">
+              <div>
+                <h1 class="text-base font-bold flex items-center gap-2">
+                  <i class="fa-solid fa-address-book text-blue-400"></i> 2026年度會員名單
+                </h1>
+                <p class="text-xs text-slate-400">全體會員共 ${list.length} 位 ｜ 尚未回覆：${unrepliedList.length} 位 ｜ 已回覆：${repliedList.length} 位</p>
+              </div>
+              <button onclick="window.close()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-white border border-slate-700 transition">關閉視窗</button>
+            </div>
+
+            <!-- 雙欄表格結構 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+              
+              <!-- 左欄表格：出席？ = "--" -->
+              <div class="flex flex-col">
+                <div class="p-3 bg-slate-100 border-b border-slate-200 flex items-center justify-between">
+                  <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span> 尚未回覆 (出席？ = "--")
+                  </span>
+                  <span class="text-xs font-mono font-bold bg-slate-200 text-slate-800 px-2.5 py-0.5 rounded-full">${unrepliedList.length} 人</span>
+                </div>
+                <div class="overflow-y-auto max-h-[600px]">
+                  <table class="w-full text-left text-sm border-collapse">
+                    <thead class="bg-slate-50 text-slate-600 text-xs uppercase sticky top-0 border-b border-slate-200 shadow-2xs">
+                      <tr>
+                        <th class="py-2.5 px-3 w-14 text-center">序號</th>
+                        <th class="py-2.5 px-4 font-bold">姓名</th>
+                        <th class="py-2.5 px-4 text-center font-bold">出席？</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                      ${unrepliedList.map((m, idx) => `
+                        <tr class="hover:bg-slate-50 transition-colors">
+                          <td class="py-2 px-3 text-center text-xs font-mono text-slate-400">${idx + 1}</td>
+                          <td class="py-2 px-4 font-semibold text-slate-800">${m.name}</td>
+                          <td class="py-2 px-4 text-center">
+                            <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-slate-100 text-slate-500 border border-slate-200">--</span>
+                          </td>
+                        </tr>
+                      `).join('')}
+                      ${unrepliedList.length === 0 ? '<tr><td colspan="3" class="text-center py-8 text-slate-400 text-xs">全體會員皆已回覆！</td></tr>' : ''}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- 右欄表格：出席？ = "本人" 或 "委託書" -->
+              <div class="flex flex-col">
+                <div class="p-3 bg-blue-50/70 border-b border-blue-100 flex items-center justify-between">
+                  <span class="text-xs font-bold text-blue-800 flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> 已回覆 (本人 / 委託書)
+                  </span>
+                  <span class="text-xs font-mono font-bold bg-blue-200/70 text-blue-900 px-2.5 py-0.5 rounded-full">${repliedList.length} 人</span>
+                </div>
+                <div class="overflow-y-auto max-h-[600px]">
+                  <table class="w-full text-left text-sm border-collapse">
+                    <thead class="bg-slate-50 text-slate-600 text-xs uppercase sticky top-0 border-b border-slate-200 shadow-2xs">
+                      <tr>
+                        <th class="py-2.5 px-3 w-14 text-center">序號</th>
+                        <th class="py-2.5 px-4 font-bold">姓名</th>
+                        <th class="py-2.5 px-4 text-center font-bold">出席？</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                      ${repliedList.map((m, idx) => {
+                        let badge = '';
+                        if (m.status.indexOf('本人') !== -1) {
+                          badge = '<span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">本人</span>';
+                        } else if (m.status.indexOf('委託') !== -1) {
+                          badge = '<span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200">委託書</span>';
+                        } else {
+                          badge = `<span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">${m.status}</span>`;
+                        }
+                        return `
+                          <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="py-2 px-3 text-center text-xs font-mono text-slate-400">${idx + 1}</td>
+                            <td class="py-2 px-4 font-semibold text-slate-800">${m.name}</td>
+                            <td class="py-2 px-4 text-center">${badge}</td>
+                          </tr>
+                        `;
+                      }).join('')}
+                      ${repliedList.length === 0 ? '<tr><td colspan="3" class="text-center py-8 text-slate-400 text-xs">目前尚無已回覆名單</td></tr>' : ''}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </body>
+        </html>
+      `);
+      newWin.document.close();
+    }
+
     // 名單列表：左右併列
     function openRepliedModal() {
       const inPersonList = rawAttendanceList.filter(item => {
@@ -617,7 +766,7 @@
       newWin.document.close();
     }
 
-    // 柱狀圖：折線淺綠、左軸深藍(略淺肉眼可見加粗)、右軸深綠(略淺肉眼可見加粗)
+    // 柱狀圖
     function openDailyStatsModal() {
       const startDate = new Date(2026, 10, 7);
       const endDate = new Date(2026, 11, 19);
@@ -770,17 +919,17 @@
                     title: { 
                       display: true, 
                       text: '當日新增 (人)',
-                      color: '#2563eb', // 左軸標題：清晰深藍
+                      color: '#2563eb',
                       font: { weight: 'bold', size: 12 }
                     },
                     ticks: { 
                       precision: 0,
-                      color: '#2563eb', // 左軸數字：清晰深藍
+                      color: '#2563eb',
                       font: { weight: '600' }
                     },
                     border: {
-                      color: '#2563eb', // 左軸線條：清晰深藍
-                      width: 2.5        // 左軸加粗
+                      color: '#2563eb',
+                      width: 2.5
                     }
                   },
                   y1: {
@@ -790,17 +939,17 @@
                     title: { 
                       display: true, 
                       text: '累計回覆 (人)',
-                      color: '#16a34a', // 右軸標題：翡翠深綠
+                      color: '#16a34a',
                       font: { weight: 'bold', size: 12 }
                     },
                     ticks: { 
                       precision: 0,
-                      color: '#16a34a', // 右軸數字：翡翠深綠
+                      color: '#16a34a',
                       font: { weight: '600' }
                     },
                     border: {
-                      color: '#16a34a', // 右軸線條：翡翠深綠
-                      width: 2.5        // 右軸加粗
+                      color: '#16a34a',
+                      width: 2.5
                     }
                   }
                 },
