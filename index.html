@@ -617,7 +617,7 @@
       newWin.document.close();
     }
 
-    // 柱狀圖：左側 Y 軸上限在 75% 以下，柱體調淺
+    // 柱狀圖：折線淺綠、左軸深藍(略淺肉眼可見加粗)、右軸深綠(略淺肉眼可見加粗)
     function openDailyStatsModal() {
       const startDate = new Date(2026, 10, 7);
       const endDate = new Date(2026, 11, 19);
@@ -668,7 +668,6 @@
         cumData.push(runningTotal);
       });
 
-      // 計算左側 Y 軸最大刻度：讓最大值不超過 75% 總高 (max / 0.75)
       const maxDaily = Math.max(...dailyData, 0);
       const yLeftSuggestedMax = Math.max(Math.ceil((maxDaily || 1) / 0.75), 4);
 
@@ -734,7 +733,7 @@
                     type: 'bar',
                     label: '當日新增回覆 (人)',
                     data: ${JSON.stringify(dailyData)},
-                    backgroundColor: 'rgba(147, 197, 253, 0.45)', // 淺柔天空藍色塊
+                    backgroundColor: 'rgba(147, 197, 253, 0.45)',
                     borderColor: 'rgba(96, 165, 250, 0.7)',
                     borderWidth: 1.5,
                     borderRadius: 4,
@@ -744,10 +743,11 @@
                     type: 'line',
                     label: '截至當日累計人數 (人)',
                     data: ${JSON.stringify(cumData)},
-                    borderColor: 'rgb(16, 185, 129)',
-                    backgroundColor: 'rgba(16, 185, 129, 0.08)',
-                    borderWidth: 2,
-                    pointRadius: 2,
+                    borderColor: '#4ade80',
+                    backgroundColor: 'rgba(74, 222, 128, 0.12)',
+                    borderWidth: 2.5,
+                    pointRadius: 2.5,
+                    pointBackgroundColor: '#4ade80',
                     tension: 0.2,
                     yAxisID: 'y1'
                   }
@@ -766,16 +766,42 @@
                     type: 'linear',
                     position: 'left',
                     beginAtZero: true,
-                    suggestedMax: ${yLeftSuggestedMax}, // 控制上限不超過 75% 總高
-                    title: { display: true, text: '當日新增 (人)' },
-                    ticks: { precision: 0 }
+                    suggestedMax: ${yLeftSuggestedMax},
+                    title: { 
+                      display: true, 
+                      text: '當日新增 (人)',
+                      color: '#2563eb', // 左軸標題：清晰深藍
+                      font: { weight: 'bold', size: 12 }
+                    },
+                    ticks: { 
+                      precision: 0,
+                      color: '#2563eb', // 左軸數字：清晰深藍
+                      font: { weight: '600' }
+                    },
+                    border: {
+                      color: '#2563eb', // 左軸線條：清晰深藍
+                      width: 2.5        // 左軸加粗
+                    }
                   },
                   y1: {
                     type: 'linear',
                     position: 'right',
                     grid: { drawOnChartArea: false },
-                    title: { display: true, text: '累計回覆 (人)' },
-                    ticks: { precision: 0 }
+                    title: { 
+                      display: true, 
+                      text: '累計回覆 (人)',
+                      color: '#16a34a', // 右軸標題：翡翠深綠
+                      font: { weight: 'bold', size: 12 }
+                    },
+                    ticks: { 
+                      precision: 0,
+                      color: '#16a34a', // 右軸數字：翡翠深綠
+                      font: { weight: '600' }
+                    },
+                    border: {
+                      color: '#16a34a', // 右軸線條：翡翠深綠
+                      width: 2.5        // 右軸加粗
+                    }
                   }
                 },
                 plugins: {
