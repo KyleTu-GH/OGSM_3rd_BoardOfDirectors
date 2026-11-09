@@ -555,7 +555,6 @@
         </head>
         <body class="text-slate-800">
           <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
-            <!-- 視窗頂部標題列 -->
             <div class="p-4 bg-slate-900 text-white flex justify-between items-center">
               <div>
                 <h1 class="text-base font-bold flex items-center gap-2">
@@ -566,7 +565,6 @@
               <button onclick="window.close()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-white border border-slate-700 transition">關閉視窗</button>
             </div>
 
-            <!-- 雙欄表格結構 -->
             <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-200">
               
               <!-- 左欄表格：出席？ = "--" -->
@@ -766,7 +764,7 @@
       newWin.document.close();
     }
 
-    // 柱狀圖
+    // 柱狀圖：支援懸停/點選顯示當日新增會員姓名
     function openDailyStatsModal() {
       const startDate = new Date(2026, 10, 7);
       const endDate = new Date(2026, 11, 19);
@@ -780,7 +778,7 @@
         const d = String(curr.getDate()).padStart(2, '0');
         const key = `${y}/${m}/${d}`;
         dateList.push(key);
-        dailyMap[key] = { daily: 0, cum: 0 };
+        dailyMap[key] = { daily: 0, names: [], cum: 0 };
         curr.setDate(curr.getDate() + 1);
       }
 
@@ -799,6 +797,7 @@
             beforeStartCount++;
           } else if (dailyMap[normKey]) {
             dailyMap[normKey].daily++;
+            if (item.name) dailyMap[normKey].names.push(item.name);
           }
         } else {
           beforeStartCount++;
@@ -809,10 +808,12 @@
       const chartLabels = [];
       const dailyData = [];
       const cumData = [];
+      const namesData = [];
 
       dateList.forEach(k => {
         chartLabels.push(k.substring(5));
         dailyData.push(dailyMap[k].daily);
+        namesData.push(dailyMap[k].names);
         runningTotal += dailyMap[k].daily;
         cumData.push(runningTotal);
       });
@@ -844,7 +845,7 @@
             <div class="p-5 bg-slate-900 text-white flex justify-between items-center">
               <div>
                 <h1 class="text-lg font-bold">大會每日回覆人數統計 (柱狀圖)</h1>
-                <p class="text-xs text-slate-400">統計區間：2026/11/07 至 2026/12/19（每日統計至 23:59 止）</p>
+                <p class="text-xs text-slate-400">統計區間：2026/11/07 至 2026/12/19（每日統計至 23:59 止；游標移至柱狀圖或點選可查看人員姓名）</p>
               </div>
               <button onclick="window.close()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-white border border-slate-700">關閉</button>
             </div>
@@ -873,6 +874,8 @@
 
           <script>
             const ctx = document.getElementById('dailyChart').getContext('2d');
+            const dailyNamesList = ${JSON.stringify(namesData)};
+
             new Chart(ctx, {
               type: 'bar',
               data: {
@@ -956,7 +959,18 @@
                 plugins: {
                   tooltip: {
                     callbacks: {
-                      title: function(items) { return '日期: 2026/' + items[0].label; }
+                      title: function(items) { 
+                        return '日期: 2026/' + items[0].label; 
+                      },
+                      afterBody: function(items) {
+                        const idx = items[0].dataIndex;
+                        const names = dailyNamesList[idx] || [];
+                        if (names.length > 0) {
+                          return '\\n新增人員：' + names.join('、');
+                        } else {
+                          return '\\n（無新增人員）';
+                        }
+                      }
                     }
                   }
                 }
