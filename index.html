@@ -511,7 +511,7 @@
       newWin.document.close();
     }
 
-    // 2026年度會員名單 (密碼驗證：1220；雙欄並列：左邊未回覆 --，右邊本人/委託書)
+    // 2026年度會員名單 (密碼驗證：1220；雙欄均按照填答時間「由新到舊」排序)
     function openProtectedMemberList() {
       const pwd = prompt("請輸入查看密碼：");
       if (pwd === null) return;
@@ -522,16 +522,20 @@
 
       const list = rawMemberFullList || [];
 
-      // 1. 左邊：出席？ = "--"
-      const unrepliedList = list.filter(m => m.status === '--' || !m.status);
+      // 1. 左邊：尚未出席 (出席？ = "--")，依填答時間「由新到舊」排序
+      const unrepliedList = list.filter(m => m.status === '--' || !m.status).sort((a, b) => {
+        const timeA = a.timeVal || 0;
+        const timeB = b.timeVal || 0;
+        if (timeA !== timeB) return timeB - timeA; // 由新到舊
+        return a.origRow - b.origRow;
+      });
 
-      // 2. 右邊：出席？ = "本人" 或 "委託書" (本人在前，委託書在後)
+      // 2. 右邊：已回覆 (出席？ = "本人" 或 "委託書")，依填答時間「由新到舊」排序
       const repliedList = list.filter(m => m.status !== '--' && m.status).sort((a, b) => {
-        const isAPerson = a.status.indexOf('本人') !== -1;
-        const isBPerson = b.status.indexOf('本人') !== -1;
-        if (isAPerson && !isBPerson) return -1;
-        if (!isAPerson && isBPerson) return 1;
-        return 0;
+        const timeA = a.timeVal || 0;
+        const timeB = b.timeVal || 0;
+        if (timeA !== timeB) return timeB - timeA; // 由新到舊
+        return a.origRow - b.origRow;
       });
 
       const newWin = window.open("", "_blank", "width=960,height=760,scrollbars=yes,resizable=yes");
@@ -545,7 +549,7 @@
         <html lang="zh-TW">
         <head>
           <meta charset="UTF-8">
-          <title>2026年度會員名單 (左右雙欄)</title>
+          <title>2026年度會員名單 (依填答時間由新到舊)</title>
           <script src="https://cdn.tailwindcss.com"><\/script>
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
           <style>
@@ -560,18 +564,18 @@
                 <h1 class="text-base font-bold flex items-center gap-2">
                   <i class="fa-solid fa-address-book text-blue-400"></i> 2026年度會員名單
                 </h1>
-                <p class="text-xs text-slate-400">全體會員共 ${list.length} 位 ｜ 尚未回覆：${unrepliedList.length} 位 ｜ 已回覆：${repliedList.length} 位</p>
+                <p class="text-xs text-slate-400">全體會員共 ${list.length} 位 ｜ 兩欄均依填答時間由新到舊排序</p>
               </div>
               <button onclick="window.close()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-white border border-slate-700 transition">關閉視窗</button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-200">
               
-              <!-- 左欄表格：出席？ = "--" -->
+              <!-- 左欄表格：尚未出席 -->
               <div class="flex flex-col">
                 <div class="p-3 bg-slate-100 border-b border-slate-200 flex items-center justify-between">
                   <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span> 尚未回覆 (出席？ = "--")
+                    <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span> 尚未出席 (由新到舊)
                   </span>
                   <span class="text-xs font-mono font-bold bg-slate-200 text-slate-800 px-2.5 py-0.5 rounded-full">${unrepliedList.length} 人</span>
                 </div>
@@ -600,11 +604,11 @@
                 </div>
               </div>
 
-              <!-- 右欄表格：出席？ = "本人" 或 "委託書" -->
+              <!-- 右欄表格：已回覆 (由新到舊) -->
               <div class="flex flex-col">
                 <div class="p-3 bg-blue-50/70 border-b border-blue-100 flex items-center justify-between">
                   <span class="text-xs font-bold text-blue-800 flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> 已回覆 (本人 / 委託書)
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> 已回覆 (由新到舊)
                   </span>
                   <span class="text-xs font-mono font-bold bg-blue-200/70 text-blue-900 px-2.5 py-0.5 rounded-full">${repliedList.length} 人</span>
                 </div>
@@ -649,14 +653,26 @@
       newWin.document.close();
     }
 
-    // 名單列表：左右併列
+    // 已回覆會員名冊（左右併列檢視，按照填答時間「由新到舊」排序）
     function openRepliedModal() {
+      // 親自出席：依時間由新到舊排序
       const inPersonList = rawAttendanceList.filter(item => {
         return item.status.indexOf("是") !== -1 || item.status === "親自出席";
+      }).sort((a, b) => {
+        const timeA = a.timeVal || 0;
+        const timeB = b.timeVal || 0;
+        if (timeA !== timeB) return timeB - timeA; // 由新到舊 (大到小)
+        return (b.order || 0) - (a.order || 0);
       });
 
+      // 委託出席：依時間由新到舊排序
       const proxyList = rawAttendanceList.filter(item => {
         return !(item.status.indexOf("是") !== -1 || item.status === "親自出席");
+      }).sort((a, b) => {
+        const timeA = a.timeVal || 0;
+        const timeB = b.timeVal || 0;
+        if (timeA !== timeB) return timeB - timeA; // 由新到舊 (大到小)
+        return (b.order || 0) - (a.order || 0);
       });
 
       const newWin = window.open("", "_blank", "width=920,height=720,scrollbars=yes,resizable=yes");
@@ -670,7 +686,7 @@
         <html lang="zh-TW">
         <head>
           <meta charset="UTF-8">
-          <title>已回覆會員名冊 (左右併列)</title>
+          <title>已回覆會員名冊 (由新到舊排序)</title>
           <script src="https://cdn.tailwindcss.com"><\/script>
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
           <style>
@@ -683,7 +699,7 @@
             <div class="p-4 bg-slate-900 text-white flex justify-between items-center">
               <div>
                 <h1 class="text-base font-bold">已回覆會員名冊（左右併列檢視）</h1>
-                <p class="text-xs text-slate-400">親自出席：${inPersonList.length} 人 ｜ 委託出席：${proxyList.length} 人 ｜ 總計：${inPersonList.length + proxyList.length} 人</p>
+                <p class="text-xs text-slate-400">親自出席：${inPersonList.length} 人 ｜ 委託出席：${proxyList.length} 人 ｜ 兩欄均依填答時間由新到舊排序</p>
               </div>
               <button onclick="window.close()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-white border border-slate-700">關閉視窗</button>
             </div>
@@ -694,7 +710,7 @@
               <div class="flex flex-col">
                 <div class="p-3 bg-emerald-50 border-b border-emerald-100 flex items-center justify-between">
                   <span class="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> 親自出席 (是)
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> 親自出席 (由新到舊)
                   </span>
                   <span class="text-xs font-mono font-bold bg-emerald-200/60 text-emerald-900 px-2 py-0.5 rounded-full">${inPersonList.length} 人</span>
                 </div>
@@ -727,7 +743,7 @@
               <div class="flex flex-col">
                 <div class="p-3 bg-indigo-50 border-b border-indigo-100 flex items-center justify-between">
                   <span class="text-xs font-bold text-indigo-800 flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> 委託出席 (否，會委託出席)
+                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> 委託出席 (由新到舊)
                   </span>
                   <span class="text-xs font-mono font-bold bg-indigo-200/60 text-indigo-900 px-2 py-0.5 rounded-full">${proxyList.length} 人</span>
                 </div>
@@ -764,7 +780,7 @@
       newWin.document.close();
     }
 
-    // 柱狀圖：支援懸停/點選顯示當日新增會員姓名
+    // 柱狀圖
     function openDailyStatsModal() {
       const startDate = new Date(2026, 10, 7);
       const endDate = new Date(2026, 11, 19);
