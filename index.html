@@ -526,7 +526,7 @@
       const unrepliedList = list.filter(m => m.status === '--' || !m.status).sort((a, b) => {
         const timeA = a.timeVal || 0;
         const timeB = b.timeVal || 0;
-        if (timeA !== timeB) return timeB - timeA; // 由新到舊
+        if (timeA !== timeB) return timeB - timeA;
         return a.origRow - b.origRow;
       });
 
@@ -534,7 +534,7 @@
       const repliedList = list.filter(m => m.status !== '--' && m.status).sort((a, b) => {
         const timeA = a.timeVal || 0;
         const timeB = b.timeVal || 0;
-        if (timeA !== timeB) return timeB - timeA; // 由新到舊
+        if (timeA !== timeB) return timeB - timeA;
         return a.origRow - b.origRow;
       });
 
@@ -655,23 +655,21 @@
 
     // 已回覆會員名冊（左右併列檢視，按照填答時間「由新到舊」排序）
     function openRepliedModal() {
-      // 親自出席：依時間由新到舊排序
       const inPersonList = rawAttendanceList.filter(item => {
         return item.status.indexOf("是") !== -1 || item.status === "親自出席";
       }).sort((a, b) => {
         const timeA = a.timeVal || 0;
         const timeB = b.timeVal || 0;
-        if (timeA !== timeB) return timeB - timeA; // 由新到舊 (大到小)
+        if (timeA !== timeB) return timeB - timeA;
         return (b.order || 0) - (a.order || 0);
       });
 
-      // 委託出席：依時間由新到舊排序
       const proxyList = rawAttendanceList.filter(item => {
         return !(item.status.indexOf("是") !== -1 || item.status === "親自出席");
       }).sort((a, b) => {
         const timeA = a.timeVal || 0;
         const timeB = b.timeVal || 0;
-        if (timeA !== timeB) return timeB - timeA; // 由新到舊 (大到小)
+        if (timeA !== timeB) return timeB - timeA;
         return (b.order || 0) - (a.order || 0);
       });
 
@@ -780,7 +778,7 @@
       newWin.document.close();
     }
 
-    // 柱狀圖
+    // 柱狀圖：折線下移至約 68% 高度、適度與柱狀圖交疊、每個節點標示人數並自動防重疊錯開
     function openDailyStatsModal() {
       const startDate = new Date(2026, 10, 7);
       const endDate = new Date(2026, 11, 19);
@@ -837,7 +835,11 @@
       const maxDaily = Math.max(...dailyData, 0);
       const yLeftSuggestedMax = Math.max(Math.ceil((maxDaily || 1) / 0.75), 4);
 
-      const newWin = window.open("", "_blank", "width=900,height=680,scrollbars=yes,resizable=yes");
+      // 右側 Y 軸最大刻度設定為 maxCum / 0.68，確保最高點約在 68% 高度，可與柱狀圖適度交疊
+      const maxCum = Math.max(...cumData, 1);
+      const yRightSuggestedMax = Math.ceil(maxCum / 0.68);
+
+      const newWin = window.open("", "_blank", "width=920,height=700,scrollbars=yes,resizable=yes");
       if (!newWin) {
         alert("瀏覽器阻擋了彈出視窗，請允許彈出視窗後重試。");
         return;
@@ -851,6 +853,7 @@
           <title>大會回覆人數 - 日統計圖表</title>
           <script src="https://cdn.tailwindcss.com"><\/script>
           <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
+          <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"><\/script>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
             body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; padding: 24px; }
@@ -861,7 +864,7 @@
             <div class="p-5 bg-slate-900 text-white flex justify-between items-center">
               <div>
                 <h1 class="text-lg font-bold">大會每日回覆人數統計 (柱狀圖)</h1>
-                <p class="text-xs text-slate-400">統計區間：2026/11/07 至 2026/12/19（每日統計至 23:59 止；游標移至柱狀圖或點選可查看人員姓名）</p>
+                <p class="text-xs text-slate-400">統計區間：2026/11/07 至 2026/12/19（折線標註累計人數；點選長條可查看當日姓名）</p>
               </div>
               <button onclick="window.close()" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-white border border-slate-700">關閉</button>
             </div>
@@ -882,15 +885,17 @@
                 </div>
               </div>
 
-              <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs relative" style="height: 380px;">
+              <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs relative" style="height: 400px;">
                 <canvas id="dailyChart"></canvas>
               </div>
             </div>
           </div>
 
           <script>
+            Chart.register(ChartDataLabels);
             const ctx = document.getElementById('dailyChart').getContext('2d');
             const dailyNamesList = ${JSON.stringify(namesData)};
+            const cumArr = ${JSON.stringify(cumData)};
 
             new Chart(ctx, {
               type: 'bar',
@@ -905,25 +910,62 @@
                     borderColor: 'rgba(96, 165, 250, 0.7)',
                     borderWidth: 1.5,
                     borderRadius: 4,
-                    yAxisID: 'y'
+                    yAxisID: 'y',
+                    datalabels: {
+                      display: false
+                    }
                   },
                   {
                     type: 'line',
                     label: '截至當日累計人數 (人)',
-                    data: ${JSON.stringify(cumData)},
+                    data: cumArr,
                     borderColor: '#4ade80',
                     backgroundColor: 'rgba(74, 222, 128, 0.12)',
                     borderWidth: 2.5,
-                    pointRadius: 2.5,
-                    pointBackgroundColor: '#4ade80',
+                    pointRadius: 3.5,
+                    pointBackgroundColor: '#22c55e',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 1.5,
                     tension: 0.2,
-                    yAxisID: 'y1'
+                    yAxisID: 'y1',
+                    datalabels: {
+                      display: function(context) {
+                        const idx = context.dataIndex;
+                        // 若數值有增長則必顯示；若連續平坦則每隔3天顯示一次或在最後一天顯示
+                        if (idx === 0) return true;
+                        if (cumArr[idx] !== cumArr[idx - 1]) return true;
+                        if (idx === cumArr.length - 1) return true;
+                        return idx % 4 === 0;
+                      },
+                      align: function(context) {
+                        // 數值交錯垂直微調，奇偶索引錯開對齊位置，徹底避免重疊黏在一起
+                        return context.dataIndex % 2 === 0 ? 'top' : 'bottom';
+                      },
+                      offset: 5,
+                      color: '#15803d', // 醒目翡翠深綠色
+                      font: {
+                        weight: 'bold',
+                        size: 10,
+                        family: 'Noto Sans TC'
+                      },
+                      textStrokeColor: '#ffffff', // 白色輪廓線，確保即使背景是淺藍長條也能清晰辨讀
+                      textStrokeWidth: 2.5,
+                      formatter: function(value) {
+                        return value;
+                      }
+                    }
                   }
                 ]
               },
               options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                layout: {
+                  padding: {
+                    top: 15,
+                    bottom: 10
+                  }
+                },
                 interaction: { mode: 'index', intersect: false },
                 scales: {
                   x: {
@@ -955,6 +997,8 @@
                     type: 'linear',
                     position: 'right',
                     grid: { drawOnChartArea: false },
+                    beginAtZero: true,
+                    suggestedMax: ${yRightSuggestedMax}, // 控制線條高度約在 68% 處
                     title: { 
                       display: true, 
                       text: '累計回覆 (人)',
